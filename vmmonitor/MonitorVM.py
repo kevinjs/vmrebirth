@@ -140,6 +140,8 @@ class TestDaemon(Daemon):
                         tmp_dict['ins_status'] = id_list[vm_c]['ins_status']
 #                        tmp_dict['ins_hostname'] = rc.run("nova --os-username admin --os_password csdb123cnic --os_tenant_name admin --os_auth_url http://192.168.138.32:5000/v2.0 show " + tmp_dict['ins_uuid'] + " | grep OS-EXT-SRV-ATTR:hypervisor_hostname | awk '{print $4}'").strip()
 
+		#	print id_list[vm_c]
+
                         tmp_dict['cpu_usage'] = id_list[vm_c]['cpu_usage']
                         tmp_dict['mem_free'] = id_list[vm_c]['mem_free']
                         tmp_dict['mem_max'] = id_list[vm_c]['mem_max']

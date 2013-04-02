@@ -33,9 +33,9 @@ class HostVmMonitor(Daemon):
     '''
     def __init__(self,  
              pidfile='/tmp/example.pid',
-             stdin='/dev/null', 
-             stdout='/dev/null', 
-             stderr='/dev/null', 
+             stdin='/dev/stdin', 
+             stdout='/dev/stdout', 
+             stderr='/dev/stderr', 
              intvl=10, 
              reboot=10,
              logfile='ECCP_Monitor.log'):
@@ -180,14 +180,15 @@ class HostVmMonitor(Daemon):
                     self._vm_list[vm_c]['ins_status'] = id_list[vm_c]['ins_status']
                     self._vm_list[vm_c]['ins_hostname'] = id_list[vm_c]['ins_hostname']
                     self._vm_list[vm_c]['chk_time'] = id_list[vm_c]['chk_time'] #Check time
-                    
-                    self._vm_list[vm_c]['cpu_usage'] = id_list[vm_c]['cpu_usage']
-                    self._vm_list[vm_c]['mem_free'] = id_list[vm_c]['mem_free']
-                    self._vm_list[vm_c]['mem_max'] = id_list[vm_c]['mem_max']
-                    self._vm_list[vm_c]['nic_in'] = id_list[vm_c]['nic_in']
-                    self._vm_list[vm_c]['nic_out'] = id_list[vm_c]['nic_out']
-                    self._vm_list[vm_c]['disk_read'] = id_list[vm_c]['disk_read']
-                    self._vm_list[vm_c]['disk_write'] = id_list[vm_c]['disk_write']
+		    
+		    if id_list[vm_c].has_key('cpu_usage'):                    
+                        self._vm_list[vm_c]['cpu_usage'] = id_list[vm_c]['cpu_usage']
+                        self._vm_list[vm_c]['mem_free'] = id_list[vm_c]['mem_free']
+                        self._vm_list[vm_c]['mem_max'] = id_list[vm_c]['mem_max']
+                        self._vm_list[vm_c]['nic_in'] = id_list[vm_c]['nic_in']
+                        self._vm_list[vm_c]['nic_out'] = id_list[vm_c]['nic_out']
+                        self._vm_list[vm_c]['disk_read'] = id_list[vm_c]['disk_read']
+                        self._vm_list[vm_c]['disk_write'] = id_list[vm_c]['disk_write']
                     
                     # Last report time by kanyun
                     if self._vm_list[vm_c]['monitor_time'] == id_list[vm_c]['monitor_time']:
@@ -208,13 +209,15 @@ class HostVmMonitor(Daemon):
 #                    tmp_dict['ins_hostname'] = self._rc.run("nova --os-username admin --os_password csdb123cnic --os_tenant_name admin --os_auth_url http://192.168.138.32:5000/v2.0 show " + tmp_dict['ins_uuid'] + " | grep OS-EXT-SRV-ATTR:hypervisor_hostname | awk '{print $4}'").strip()
                     tmp_dict['ins_hostname'] = self._find_host(tmp_dict['ins_uuid'])
 
-                    tmp_dict['cpu_usage'] = id_list[vm_c]['cpu_usage']
-                    tmp_dict['mem_free'] = id_list[vm_c]['mem_free']
-                    tmp_dict['mem_max'] = id_list[vm_c]['mem_max']
-                    tmp_dict['nic_in'] = id_list[vm_c]['nic_in']
-                    tmp_dict['nic_out'] = id_list[vm_c]['nic_out']
-                    tmp_dict['disk_read'] = id_list[vm_c]['disk_read']
-                    tmp_dict['disk_write'] = id_list[vm_c]['disk_write']
+#		     print id_list[vm_c]
+		    if id_list[vm_c].has_key('cpu_usage'):
+                        tmp_dict['cpu_usage'] = id_list[vm_c]['cpu_usage']
+                        tmp_dict['mem_free'] = id_list[vm_c]['mem_free']
+                        tmp_dict['mem_max'] = id_list[vm_c]['mem_max']
+                        tmp_dict['nic_in'] = id_list[vm_c]['nic_in']
+                        tmp_dict['nic_out'] = id_list[vm_c]['nic_out']
+                        tmp_dict['disk_read'] = id_list[vm_c]['disk_read']
+                        tmp_dict['disk_write'] = id_list[vm_c]['disk_write']
 
                     tmp_dict['chk_time'] = id_list[vm_c]['chk_time']
                     tmp_dict['monitor_time'] = id_list[vm_c]['monitor_time']
