@@ -25,9 +25,10 @@ class HostVmMonitor(Daemon):
              stdin='/dev/stdin', 
              stdout='/dev/stdout', 
              stderr='/dev/stderr', 
-             configfile='xxx.config'):
+             configfile='/home/cnic/vmrebirth_sj/vmmonitor/vmmonitor.config'):
         
         self._params = utils.readParameters(configfile)
+#	utils.printDict(self._params)
         
         if self._params != None:
             Daemon.__init__(self, self._params['pidfile'], stdin, stdout, stderr)
@@ -36,7 +37,8 @@ class HostVmMonitor(Daemon):
             self._vm_list = {}
             self._report = {}
         else:
-            exit(1)
+	    print 'Read parameters error!!!'
+            exit(2)
     
     
     def _find_host(self, ins_uuid):
@@ -222,14 +224,16 @@ class HostVmMonitor(Daemon):
         while True:
             self._report = {}
             chk_timestamp = int(time.time())
-            utils.appendFile('Time: ' + time.asctime(time.localtime()) + ' >> ' + str(num_r) + '\n', self.logfile)
+            utils.appendFile('Time: ' + time.asctime(time.localtime()) + ' >> ' + str(num_r) + '\n', self._params['logfile'])
             
             self.check_host(chk_timestamp)
             self.check_vm(chk_timestamp)
+
+	    utils.appendFile('Total: ' + str(len(self._report)) + ' hosts\n', self._params['logfile'])
             
             if self._report != None and len(self._report) != 0:
                 for host in self._report:
-                    utils.appendFile('Host: ' + host + ' -- Status: ' + self._report[host]['status'] + '\n', self._params['logfile'])
+                    utils.appendFile('Host: ' + host + ' -- Status: [' + self._report[host]['status'] + '], vm: ' + str(len(self._report[host]['vm_list'])) + '\n', self._params['logfile'])
                     
                     if self._report[host]['status'] != 'ALIVE':
                         utils.appendFile('  - TODO: Migration...\n', self._params['logfile'])
@@ -237,7 +241,7 @@ class HostVmMonitor(Daemon):
                         for vm in self._report[host]['vm_list']:
                             utils.appendFile('  - ' + vm['vm'] + ' [' + vm['status'] + ' - ' + str(vm['repeat_num']) + '][' + vm['status-ori'] + ']\n', self._params['logfile'])
                             
-                            if vm['status'] == 'WAITING' and vm['repeat_num'] > self._reboot_threshold:
+                            if vm['status'] == 'WAITING' and vm['repeat_num'] > self._params['reboot']:
                                 op.reboot_ins(vm['vm'])
                                 
             time.sleep(self._params['intvl'])
@@ -246,7 +250,7 @@ class HostVmMonitor(Daemon):
 
             
 if __name__ == "__main__":
-    daemon = HostVmMonitor( configfile='/tmp/vm_monitor.log')
+    daemon = HostVmMonitor(configfile='/home/cnic/vmrebirth_sj/vmmonitor/vmmonitor.config')
     
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:

@@ -36,8 +36,10 @@ def printDict(objDict):
 Read config parameters from *.config
 '''    
 def readParameters(filename):
-#        print 'read parameters from ' + filename
+#    print 'test'
     f = open(filename, 'r')
+#    print 'read parameters from ' + filename
+
     param = {}
     
     try:
